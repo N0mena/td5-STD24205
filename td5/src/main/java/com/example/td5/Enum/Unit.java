@@ -1,4 +1,5 @@
 package com.example.td5.Enum;
 
-public class Unit {
+public enum Unit {
+    PCS,KG,L
 }

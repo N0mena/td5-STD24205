@@ -1,4 +1,5 @@
 package com.example.td5.Enum;
 
-public class DishTypeEnum {
+public enum DishTypeEnum {
+    STARTER,MAIN,DESSERT
 }

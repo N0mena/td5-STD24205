@@ -1,4 +1,5 @@
 package com.example.td5.Enum;
 
-public class MovementTypeEnum {
+public enum MovementTypeEnum {
+    IN,OUT
 }

@@ -1,9 +1,10 @@
-package com.example.Spring_srp_ingredient.Entity;
+package com.example.td5.Entity;
 
 import com.example.td5.Enum.Unit;
-import org.springframework.format.annotation.DurationFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DishIngredient {
+    @JsonIgnore
     private Dish dish;
     private Ingredient ingredient;
     private Double quantity;
