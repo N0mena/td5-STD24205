@@ -1,6 +1,7 @@
 package com.example.td5.Repository;
 
 import com.example.td5.Entity.Dish;
+import com.example.td5.Entity.DishIngredient;
 import com.example.td5.Entity.Ingredient;
 import com.example.td5.Enum.CategoryEnum;
 import com.example.td5.Enum.DishTypeEnum;
@@ -19,6 +20,63 @@ public class DishRepository {
 
     public DishRepository(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public List<Ingredient> findIngredientsByDishId(
+            Integer dishId,
+            String ingredientName,
+            Double ingredientPriceAround
+    ) throws SQLException {
+
+        String sql = """
+            SELECT i.id, i.name, i.category, i.price
+            FROM ingredient i
+            JOIN dish_ingredient di ON di.id_ingredient = i.id
+            WHERE di.id_dish = ?
+            """;
+
+        List<Ingredient> list = new ArrayList<>();
+
+        // construction dynamique comme ton style
+        if (ingredientName != null) {
+            sql += " AND i.name ILIKE ? ";
+        }
+
+        if (ingredientPriceAround != null) {
+            sql += " AND i.price BETWEEN ? AND ? ";
+        }
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            int index = 1;
+
+            ps.setInt(index++, dishId);
+
+            if (ingredientName != null) {
+                ps.setString(index++, "%" + ingredientName + "%");
+            }
+
+            if (ingredientPriceAround != null) {
+                ps.setDouble(index++, ingredientPriceAround - 50);
+                ps.setDouble(index++, ingredientPriceAround + 50);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+
+                    Ingredient ingredient = new Ingredient();
+                    ingredient.setId(rs.getInt("id"));
+                    ingredient.setName(rs.getString("name"));
+                    ingredient.setCategory(CategoryEnum.valueOf(rs.getString("category")));
+                    ingredient.setPrice(rs.getDouble("price"));
+
+                    list.add(ingredient);
+                }
+            }
+        }
+
+        return list;
     }
 
     public List<Dish> findAll() throws SQLException {

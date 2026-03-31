@@ -19,6 +19,27 @@ public class DishController {
         this.dishRepository = dishRepository;
     }
 
+    @GetMapping("/{id}/ingredients")
+    public ResponseEntity<?> getIngredientsByDish(
+            @PathVariable Integer id,
+            @RequestParam(required = false) String ingredientName,
+            @RequestParam(required = false) Double ingredientPriceAround
+    ) throws SQLException {
+
+        Dish dish = dishRepository.findById(id);
+
+        if (dish == null) {
+            return ResponseEntity
+                    .status(404)
+                    .body("Dish.id=" + id + " is not found");
+        }
+
+        List<Ingredient> ingredients =
+                dishRepository.findIngredientsByDishId(id, ingredientName, ingredientPriceAround);
+
+        return ResponseEntity.ok(ingredients);
+    }
+
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false) String ingredientName) throws SQLException {
